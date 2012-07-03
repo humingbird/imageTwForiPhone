@@ -16,6 +16,9 @@
 
 @synthesize window = _window;
 @synthesize tabBarController = _tabBarController;
+@synthesize postImage;
+@synthesize isImage;
+@synthesize imageUrl;
 
 - (void)dealloc
 {
@@ -26,6 +29,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    postImage = nil;
+    isImage = FALSE;
+    imageUrl = nil;
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
     UIViewController *viewController1, *viewController2;

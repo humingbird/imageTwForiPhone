@@ -7,7 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AppDelegate.h"
 
-@interface FormViewController : UIViewController
+@interface FormViewController : UIViewController{
+    //IBOutlet UIImageView *imageView;
+    IBOutlet UINavigationItem *navi;
+    IBOutlet UITextField *comment;
+    
+    //NSHTTPURLResponse *hres;
+    //NSMutableData *buffer;
+    //NSString *contents;
+    AppDelegate *appDelegate;
+    
+    
+}
 
 @end

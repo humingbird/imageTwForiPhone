@@ -8,6 +8,7 @@
 
 #import "SecondViewController.h"
 #import "FormViewController.h"
+#import "AppDelegate.h"
 
 @interface SecondViewController ()
 
@@ -20,7 +21,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.title = NSLocalizedString(@"Second", @"Second");
+        self.title = NSLocalizedString(@"Photo", @"Second");
         self.tabBarItem.image = [UIImage imageNamed:@"second"];
     }
     return self;
@@ -29,6 +30,7 @@
 -(void)viewDidAppear:(BOOL)animated{
     
     if(!isShow){
+    
     UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
     
     if(![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
@@ -118,13 +120,21 @@
     
     UIImage *aImage = [image image];
     
-    if(aImage == nil){
+    //画像データの保持
+     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
+     appDelegate.postImage = aImage;
+     
+    /*if(aImage == nil){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー" message:@"写真を撮影してください" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         return;
     }
     
     UIImageWriteToSavedPhotosAlbum(aImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+     */
+     //別画面遷移
+     FormViewController *fvc =[[FormViewController alloc]initWithNibName:@"FormViewController" bundle:nil];
+     [self presentModalViewController:fvc animated:YES];
 }
 
 

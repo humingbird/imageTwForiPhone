@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AppDelegate.h"
 
-@interface FirstViewController : UIViewController
+@interface FirstViewController : UIViewController{
+}
 
 @end

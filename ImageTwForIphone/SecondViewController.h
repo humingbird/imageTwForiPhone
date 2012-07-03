@@ -18,6 +18,5 @@ UIImagePickerControllerDelegate
     IBOutlet UIButton *button;
 }
 -(IBAction)doSave;
-//@property(nonatomic,retain)UIView *cameraOverlayView;
-//@property(nonatomic)BOOL showsCameraControls;
+
 @end
