@@ -27,44 +27,76 @@
     return self;
 }
 
--(void)viewDidAppear:(BOOL)animated{
-    
+//画面が表示される度に呼び出される
+-(void)viewWillAppear:(BOOL)animated{
     if(!isShow){
-    
-    UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
-    
-    if(![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"エラー" message:@"カメラが起動できませんでした" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
-        [alert release];
-        
+    UIActionSheet *ac = [[UIActionSheet alloc]initWithTitle:@"photo" delegate:self cancelButtonTitle:@"キャンセル" destructiveButtonTitle:@"カメラで撮影" otherButtonTitles:@"カメラロールの画像を使う", nil];
+    [ac showInView:self.view];
+    [ac release];
+    }
+}
+
+//ActionSheetのボタンイベント
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(buttonIndex ==2){
+        NSLog(@"return");
+        isShow = FALSE;
         UITabBarController *controller = self.tabBarController;
         controller.selectedViewController = [controller.viewControllers objectAtIndex:0];
         return;
+
     }
     
-   //カメラの起動
-    UIImagePickerController *ipc = [[UIImagePickerController alloc]init];
-    ipc.sourceType = sourceType;
-    ipc.mediaTypes = [NSArray arrayWithObject:@"public.image"];
-    
-    //カメラの撮影画面のボタンメニューを消す
-    /*ipc.showsCameraControls = NO;
-    
-    //代わりのメニューバーを読み込んでくる(メニューバーの生成場所別にしたい）
-    UIToolbar *tb_ipad = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 970, 1000, 120)];    
-    ipc.cameraOverlayView = tb_ipad;
-    UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithTitle:@"hoge" target:self action:@selector(hoge)];*/
+    UIImagePickerControllerSourceType sourceType = 0;
+    switch (buttonIndex) {
+        case 0:
+            sourceType = UIImagePickerControllerSourceTypeCamera;
+            break;
+        case 1:
+            sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            
+        default:
+            break;
+    }
+    if(!isShow){
+        //UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
+        
+        if(![UIImagePickerController isSourceTypeAvailable:sourceType]){
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"エラー" message:@"カメラが起動できませんでした" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+            [alert release];
+            
+            UITabBarController *controller = self.tabBarController;
+            controller.selectedViewController = [controller.viewControllers objectAtIndex:0];
+            isShow = FALSE;
+            return;
+        }
+        
+        //imagePicker
+        UIImagePickerController *ipc = [[UIImagePickerController alloc]init];
+        ipc.sourceType = sourceType;
+        ipc.mediaTypes = [NSArray arrayWithObject:@"public.image"];
+        
+        //カメラの撮影画面のボタンメニューを消す
+        /*ipc.showsCameraControls = NO;
+         
+         //代わりのメニューバーを読み込んでくる(メニューバーの生成場所別にしたい）
+         UIToolbar *tb_ipad = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 970, 1000, 120)];    
+         ipc.cameraOverlayView = tb_ipad;
+         UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithTitle:@"hoge" target:self action:@selector(hoge)];*/
+        
+        
+        
+        ipc.delegate = self;
+        [self presentModalViewController:ipc animated:TRUE];
+        [ipc release];
+        isShow = TRUE;
+    }
 
     
-    
-    ipc.delegate = self;
-    [self presentModalViewController:ipc animated:TRUE];
-    [ipc release];
-    isShow = TRUE;
-    }
 }
-							
+
+//初回ロード時
 - (void)viewDidLoad
 {
     [super viewDidLoad];

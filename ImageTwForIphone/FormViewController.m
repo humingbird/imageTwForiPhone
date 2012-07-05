@@ -86,7 +86,7 @@
     //登録が全部うまく行ったらうまくいったよ処理
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"登録処理完了" message:@"登録が完了しました" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];
-    //タブを切り替えて、最初のページを表示する
+    //タブを切り替えて、最初のページを表示する（今は撮影画面に戻るだけ）
     [self dismissModalViewControllerAnimated:YES];
     
     

@@ -12,10 +12,12 @@
     UIImage *postImage;
     BOOL isImage;
     NSString *imageUrl;
+    NSArray *articleId;
 }
 @property(nonatomic,assign) UIImage *postImage;
 @property(nonatomic,assign) BOOL isImage;
 @property(nonatomic,assign) NSString *imageUrl;
+@property(nonatomic,assign) NSArray *articleId;
 @property (strong, nonatomic) UIWindow *window;
 
 @property (strong, nonatomic) UITabBarController *tabBarController;

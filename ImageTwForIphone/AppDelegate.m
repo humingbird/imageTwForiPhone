@@ -19,6 +19,7 @@
 @synthesize postImage;
 @synthesize isImage;
 @synthesize imageUrl;
+@synthesize articleId;
 
 - (void)dealloc
 {
