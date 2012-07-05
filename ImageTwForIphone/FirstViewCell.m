@@ -9,6 +9,11 @@
 #import "FirstViewCell.h"
 
 @implementation FirstViewCell
+@synthesize topUserName;
+@synthesize photo;
+@synthesize commentUserName;
+@synthesize iine;
+@synthesize comment;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

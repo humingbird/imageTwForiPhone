@@ -7,7 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#define kConnectionDidFinishNotification @"connectionDidFinishNotification"
 
-@interface ImageLoad : NSObject
+@interface ImageLoad : NSObject{
+    NSMutableData *data;
+    NSString *path;
+    NSIndexPath *indexPath;
+}
+@property (retain,readonly)NSMutableData *data;
+@property(retain)NSString *path;
+@property(retain)NSIndexPath *indexPath;
+-(void)connectionWithPath:(NSString *)filePath;
 
 @end
