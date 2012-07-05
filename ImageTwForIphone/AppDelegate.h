@@ -10,6 +10,7 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>{
     UIImage *postImage;
+    UIImage *preImage;
     BOOL isImage;
     NSString *imageUrl;
     NSArray *articleId;

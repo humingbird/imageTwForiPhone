@@ -110,6 +110,12 @@
     
     //アプリ上のimageViewに撮影した画像の情報を渡す
     UIImage * aImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+    preImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+    //画像加工していない元データの保持
+    iv = [[UIImageView alloc]init];
+    iv.hidden = YES;
+    [iv setImage:preImage];
+
     [image setImage:aImage];
         
     if([picker respondsToSelector:@selector(presentingViewController)]){
@@ -156,20 +162,40 @@
      AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
      appDelegate.postImage = aImage;
      
-    /*if(aImage == nil){
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー" message:@"写真を撮影してください" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    if(aImage == nil){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー" message:@"画像を選択してください" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         return;
     }
-    
-    UIImageWriteToSavedPhotosAlbum(aImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
-     */
+     
      //別画面遷移
      FormViewController *fvc =[[FormViewController alloc]initWithNibName:@"FormViewController" bundle:nil];
      [self presentModalViewController:fvc animated:YES];
 }
 
+//画像をモノクロにする
+-(IBAction)changeMonoChrome{
+    UIImage *aImage = [iv image];
+    UIImage *changedImage;
+    changedImage = [ImageColor monochrome:aImage];
+    [image setImage:changedImage];
+    [changedImage release];
+}
 
+//画像をセピアにする
+-(IBAction)changeSepia{
+    UIImage *aImage = [iv image];
+    UIImage *changedImage;
+    changedImage = [ImageColor sepia:aImage];
+    [image setImage:changedImage];
+
+}
+
+//元の画像に戻す
+-(IBAction)changeReset{
+    UIImage *aImage = [iv image];
+    [image setImage:aImage];
+}
 
 - (void)viewDidUnload
 {

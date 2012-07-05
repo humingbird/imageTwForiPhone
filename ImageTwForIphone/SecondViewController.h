@@ -7,12 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ImageColor.h"
 
 @interface SecondViewController:UIViewController
 <
 UINavigationControllerDelegate,
 UIImagePickerControllerDelegate
 >{
+    
     BOOL isShow;
     IBOutlet UIImageView *image;
     IBOutlet UIButton *button;
@@ -20,6 +22,9 @@ UIImagePickerControllerDelegate
     IBOutlet UIButton *monochrome;
     IBOutlet UIButton *sepia;
     IBOutlet UIButton *reset;
+    
+    UIImageView *iv;
+    UIImage *preImage;
 }
 -(IBAction)doSave;
 -(IBAction)changeMonoChrome;
