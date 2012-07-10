@@ -7,7 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AppDelegate.h"
+//#import "SBJson.h"
 
-@interface ListOperation : NSOperation
+@interface ListOperation : NSOperation{
+    AppDelegate *appdelegate;
+    NSMutableData *buffer;
+}
 
 @end

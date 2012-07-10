@@ -19,46 +19,58 @@
     size_t width = CGImageGetWidth(imageRef);
     size_t height = CGImageGetHeight(imageRef);
     
+    //pxを構成するRGB値のそれぞれのビット数の取得
     size_t bitsPerComponent;
     bitsPerComponent = CGImageGetBitsPerComponent(imageRef);
     
+    //px全体のビット数の取得
     size_t bitsPerPixel;
     bitsPerPixel = CGImageGetBitsPerPixel(imageRef);
     
+    //画像の横ライン１つのデータのバイト数を取得
     size_t bytesPerRow;
     bytesPerRow = CGImageGetBytesPerRow(imageRef);
     
+    //画像の色空間の取得（色空間・・？）
     CGColorSpaceRef colorSpace;
     colorSpace = CGImageGetColorSpace(imageRef);
     
+    //画像のbitmap情報の取得
     CGBitmapInfo bitmapInfo;
     bitmapInfo = CGImageGetBitmapInfo(imageRef);
     
+    //画像がピクセル間の補完をしているか
     bool shouldInterPolate;
     shouldInterPolate = CGImageGetShouldInterpolate(imageRef);
     
+    //表示装置によって補正をしているか
     CGColorRenderingIntent intent;
     intent = CGImageGetRenderingIntent(imageRef);
     
+    //画像のデータプロバイダの取得
     CGDataProviderRef dataProvider;
     dataProvider = CGImageGetDataProvider(imageRef);
     
+    //データプロバイダから画像をbitmapデータで取得
     CFDataRef data;
     UInt8* buffer;
     data = CGDataProviderCopyData(dataProvider);
     buffer = (UInt8*)CFDataGetBytePtr(data);
     
+    //1ピクセルごとに色の調整
     NSUInteger x,y;
     for(y=0;y<height;y++){
         for(x=0;x<width;x++){
             UInt8* tmp;
-            tmp = buffer + y * bytesPerRow + x * 4;
+            tmp = buffer + y * bytesPerRow + x * 4;// RGBAの4つ値をもっているので、1ピクセルごとに*4してずらす
             
+            //RGB値の調整
             UInt8 red,green,blue;
             red = *(tmp + 0);
             green =*(tmp +1);
             blue = *(tmp +2);
             
+            //光度の計算
             UInt8 brightness;
             brightness =(77 *red + 28*green +151*blue)/256;
             
@@ -68,25 +80,27 @@
         }
     }
     
+    //色の調整をしたデータの生成
     CFDataRef effectedData;
     effectedData = CFDataCreate(NULL, buffer, CFDataGetLength(data));
     
+    //色の調整をしたデータプロバイダの生成
     CGDataProviderRef effectedDataProvider;
     effectedDataProvider = CGDataProviderCreateWithCFData(effectedData);
     
+    //画像の生成
     CGImageRef effectedCgImage;
     UIImage* effectedImage;
     effectedCgImage = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace, bitmapInfo, effectedDataProvider, NULL, shouldInterPolate, intent);
     
     effectedImage = [[UIImage alloc]initWithCGImage:effectedCgImage];
     
-    
+    //もろもろrelease
     CGImageRelease(effectedCgImage);
     CFRelease(effectedDataProvider);
     CFRelease(effectedData);
     CFRelease(data);
     
-    //CGImageRelease(imageRef);
     return effectedImage;
     
 }

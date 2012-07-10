@@ -1,30 +1,30 @@
 //
-//  FirstViewController.h
+//  ThirdViewController.h
 //  ImageTwForIphone
 //
-//  Created by  on 12/06/26.
+//  Created by  on 12/07/09.
 //  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-#import "AppDelegate.h"
 #import "FirstViewCell.h"
+#import "AppDelegate.h"
 #import "ImageLoad.h"
 #import "SBJson.h"
 #import "KeyChain.h"
-#import "LoginViewController.h"
-//#import "ListOperation.h"
 
-@interface FirstViewController : UIViewController{
+@interface ThirdViewController : UIViewController{
+    IBOutlet UINavigationItem *navi;
     IBOutlet UITableView *table;
     IBOutlet UIScrollView *scroll;
-    IBOutlet UINavigationItem *navi;
     
-    NSMutableArray *articleId ;    
-    NSMutableArray *imageUrl;    
+    NSMutableArray *articleId;
     NSMutableArray *description;
     NSMutableArray *userName;
+    NSMutableArray *imageUrl;
+    
     AppDelegate *appdelegate;
+    
 }
 
 @end

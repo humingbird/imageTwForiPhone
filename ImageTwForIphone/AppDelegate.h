@@ -9,12 +9,19 @@
 #import <UIKit/UIKit.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>{
+    BOOL *is_login;
+    NSString *user_id;
+    NSString *loginStatus;
+    
     UIImage *postImage;
     UIImage *preImage;
     BOOL isImage;
     NSString *imageUrl;
     NSArray *articleId;
 }
+@property(nonatomic,assign) BOOL *is_login;
+@property(nonatomic,assign) NSString *user_id;
+@property(nonatomic,assign) NSString *loginStatus;
 @property(nonatomic,assign) UIImage *postImage;
 @property(nonatomic,assign) BOOL isImage;
 @property(nonatomic,assign) NSString *imageUrl;

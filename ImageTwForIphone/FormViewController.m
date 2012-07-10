@@ -88,9 +88,7 @@
     [alert show];
     //タブを切り替えて、最初のページを表示する（今は撮影画面に戻るだけ）
     [self dismissModalViewControllerAnimated:YES];
-    
-    
-    
+
 }
 
 //ローカル保存時のエラー処理

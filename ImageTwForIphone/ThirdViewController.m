@@ -1,62 +1,38 @@
 //
-//  FirstViewController.m
+//  ThirdViewController.m
 //  ImageTwForIphone
 //
-//  Created by  on 12/06/26.
+//  Created by  on 12/07/09.
 //  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
 //
 
-#import "FirstViewController.h"
-#import "ImageLoad.h"
+#import "ThirdViewController.h"
 
-@interface FirstViewController ()
+@interface ThirdViewController ()
 
 @end
 
-@implementation FirstViewController
+@implementation ThirdViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.title = NSLocalizedString(@"List", @"First");
-        self.tabBarItem.image = [UIImage imageNamed:@"first"];
+        self.title = NSLocalizedString(@"all", @"Third");
+        self.tabBarItem.image = [UIImage imageNamed:@"First"];
     }
     return self;
 }
 
--(void)viewDidAppear:(BOOL)animated{
-    //別画面遷移
-    appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
-    if(!appdelegate.is_login){
-        //keyChainにユーザ情報が入っていたらそれを使ってログインする
-        NSDictionary *userInfo = nil;
-        userInfo = [KeyChain getUserInfo];
-        NSLog(@"%@",userInfo);
-        if(userInfo){
-            [LoginViewController autoLogin:userInfo];
-            NSLog(@"%@",appdelegate.user_id);
-            [self getArticleList];
-            [table reloadData];
-        }else{
-            NSLog(@"keyChain is nothing");
-            LoginViewController *fvc =[[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
-            [self presentModalViewController:fvc animated:YES];
-            return;
-        }
-        
-    }
-}
-
 //表示されるたびにtableのdataを再読み込み（本当はmemcacheとかにすべき）
 -(void)viewWillAppear:(BOOL)animated{
-    NSLog(@"samplesample");
+    appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
     if(appdelegate.is_login){
         [self getArticleList];
         [table reloadData];
     }
 }
-							
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -69,20 +45,7 @@
     table.rowHeight = 291;
     [scroll addSubview:table];
     [scroll setContentSize:table.frame.size];
-    if(appdelegate.is_login){
-        [table reloadData];
-    }
-	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    [articleId release];
-    [imageUrl release];
-    [description release];
-    [userName release];
-    // Release any retained subviews of the main view.
+    // Do any additional setup after loading the view from its nib.
 }
 
 //セクション数を決める（デフォルトは1)
@@ -98,7 +61,7 @@
 
 //セルの設定と、セル内の要素の値の追加
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"table view");
+    NSLog(@"table view third");
     static NSString *CellIdentifier=@"Cell";
     
     FirstViewCell *cell = (FirstViewCell *)[tableView
@@ -139,11 +102,9 @@
 -(void)getArticleList{
     //listのAPIはget
     NSLog(@"%@",appdelegate.user_id);
-    NSString *urlStr = @"http://49.212.148.198/imagetw/list.php?list=10&user_id=";
-    NSString *param = [urlStr stringByAppendingString:appdelegate.user_id]; 
-    NSLog(@"%@",param);
+    NSString *urlStr = @"http://49.212.148.198/imagetw/list.php?list=10&type=all";
     
-    NSURL *url = [NSURL URLWithString:param];
+    NSURL *url = [NSURL URLWithString:urlStr];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
     NSURLResponse *response =nil;
@@ -184,12 +145,12 @@
     if(delegate !=nil){
         NSIndexPath *indexPath = nil;
         NSData *imageData = nil;
-    
-    if([notification userInfo] == nil){
-        imageData = delegate.data;
-        indexPath = delegate.indexPath;
-    }
-    
+        
+        if([notification userInfo] == nil){
+            imageData = delegate.data;
+            indexPath = delegate.indexPath;
+        }
+        
         if((imageData != nil)){
             FirstViewCell *cell;
             cell =(FirstViewCell *)[table cellForRowAtIndexPath:indexPath];
@@ -215,19 +176,29 @@
     
     //is_loginをfalseにする
     appdelegate.is_login = FALSE;
-
+    
     //再読み込み
-    [self viewDidAppear:YES];
-  
+    UITabBarController *controller = self.tabBarController;
+    controller.selectedViewController = [controller.viewControllers objectAtIndex:0];
+    return;
+
+    
+}
+
+- (void)viewDidUnload
+{
+    [super viewDidUnload];
+    [articleId release];
+    [description release];
+    [userName release];
+    [imageUrl release];
+    // Release any retained subviews of the main view.
+    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-    } else {
-        return YES;
-    }
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 @end

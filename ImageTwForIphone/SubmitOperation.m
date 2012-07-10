@@ -114,6 +114,13 @@
     [requestData appendData:[[NSString stringWithString:@"\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];    
     [requestData appendData:[[NSString stringWithFormat:@"--%@--\r\n\r\n", boundary] dataUsingEncoding:NSASCIIStringEncoding]];
     
+    [requestData appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSASCIIStringEncoding]];
+    [requestData appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"user_id\"\r\n\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];
+    [requestData appendData:[[NSString stringWithFormat:@"%@",appdelegate.user_id] dataUsingEncoding:NSASCIIStringEncoding]];
+    [requestData appendData:[[NSString stringWithString:@"\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];    
+    [requestData appendData:[[NSString stringWithFormat:@"--%@--\r\n\r\n", boundary] dataUsingEncoding:NSASCIIStringEncoding]];
+
+    
     NSString *urlstr = @"http://49.212.148.198/imagetw/comment.php";
     NSURL *url = [NSURL URLWithString:urlstr];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
@@ -134,6 +141,9 @@
         NSLog(@"%@",responceString);
         appdelegate.isImage = FALSE;
         [responceString release];
+    }else{
+        NSLog(@"submit error");
+        return;
     }
 }
 
