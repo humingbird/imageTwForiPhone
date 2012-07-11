@@ -43,6 +43,13 @@
 
 //登録処理
 -(void)doSave:(id)sender{
+    
+    reachability = [Reachability reachabilityWithHostName:@"49.212.148.198"];
+    NetworkStatus  status = [reachability currentReachabilityStatus];
+    if(status == NotReachable){
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ネットワークエラー" message:@"圏外なので投稿できません" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    }else{
     NSLog(@"登録処理しますよ");    
     //ipadの画像サイズがでかすぎて読み込みに時間がかかりすぎるので、暫定的に決めうちリサイズ
     UIImage *defaultImage = appDelegate.postImage;
@@ -87,7 +94,9 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"登録処理完了" message:@"登録が完了しました" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];
     //タブを切り替えて、最初のページを表示する（今は撮影画面に戻るだけ）
+    }
     [self dismissModalViewControllerAnimated:YES];
+    appDelegate.is_show = FALSE;
 
 }
 

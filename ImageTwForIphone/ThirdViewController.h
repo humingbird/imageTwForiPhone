@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "FirstViewCell.h"
+#import "Reachability.h"
 #import "AppDelegate.h"
 #import "ImageLoad.h"
 #import "SBJson.h"
@@ -17,6 +18,8 @@
     IBOutlet UINavigationItem *navi;
     IBOutlet UITableView *table;
     IBOutlet UIScrollView *scroll;
+    
+    Reachability *reachability;
     
     NSMutableArray *articleId;
     NSMutableArray *description;

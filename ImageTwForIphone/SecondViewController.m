@@ -8,7 +8,6 @@
 
 #import "SecondViewController.h"
 #import "FormViewController.h"
-#import "AppDelegate.h"
 
 @interface SecondViewController ()
 
@@ -23,16 +22,23 @@
     if (self) {
         self.title = NSLocalizedString(@"Photo", @"Second");
         self.tabBarItem.image = [UIImage imageNamed:@"second"];
+        appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
     }
     return self;
 }
 
 //画面が表示される度に呼び出される
 -(void)viewWillAppear:(BOOL)animated{
-    if(!isShow){
-    UIActionSheet *ac = [[UIActionSheet alloc]initWithTitle:@"photo" delegate:self cancelButtonTitle:@"キャンセル" destructiveButtonTitle:@"カメラで撮影" otherButtonTitles:@"カメラロールの画像を使う", nil];
-    [ac showInView:self.view];
-    [ac release];
+    if(!appdelegate.is_show){
+    
+        UIActionSheet *ac = [[UIActionSheet alloc]initWithTitle:@"photo" delegate:self cancelButtonTitle:@"キャンセル" destructiveButtonTitle:@"カメラで撮影" otherButtonTitles:
+                @"カメラロールの画像を使う", nil];
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            [ac showFromBarButtonItem:self.tabBarItem animated:YES];
+        }else{
+            [ac showInView:self.view];
+        }
+            [ac release];
     }
 }
 
@@ -40,7 +46,7 @@
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     if(buttonIndex ==2){
         NSLog(@"return");
-        isShow = FALSE;
+        appdelegate.is_show = FALSE;
         UITabBarController *controller = self.tabBarController;
         controller.selectedViewController = [controller.viewControllers objectAtIndex:0];
         return;
@@ -58,7 +64,7 @@
         default:
             break;
     }
-    if(!isShow){
+    if(!appdelegate.is_show){
         //UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
         
         if(![UIImagePickerController isSourceTypeAvailable:sourceType]){
@@ -68,15 +74,26 @@
             
             UITabBarController *controller = self.tabBarController;
             controller.selectedViewController = [controller.viewControllers objectAtIndex:0];
-            isShow = FALSE;
+            appdelegate.is_show = FALSE;
             return;
         }
         
         //imagePicker
-        UIImagePickerController *ipc = [[UIImagePickerController alloc]init];
+        UIImagePickerController *ipc = [[[UIImagePickerController alloc]init]autorelease];
         ipc.sourceType = sourceType;
         ipc.mediaTypes = [NSArray arrayWithObject:@"public.image"];
+        ipc.delegate = self;
         
+        //iPadではUIImagePickerControllerを直に呼ぶと落ちるので、UIPopoverControllerに乗っけて表示
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            popoverController = [[UIPopoverController alloc] initWithContentViewController:ipc];
+            [popoverController presentPopoverFromBarButtonItem:self.tabBarItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            appdelegate.is_show = TRUE;
+        }else{
+            [self presentModalViewController:ipc animated:TRUE];
+            [ipc release];
+            appdelegate.is_show = TRUE;
+        }
         //カメラの撮影画面のボタンメニューを消す
         /*ipc.showsCameraControls = NO;
          
@@ -85,12 +102,6 @@
          ipc.cameraOverlayView = tb_ipad;
          UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithTitle:@"hoge" target:self action:@selector(hoge)];*/
         
-        
-        
-        ipc.delegate = self;
-        [self presentModalViewController:ipc animated:TRUE];
-        [ipc release];
-        isShow = TRUE;
     }
 
     
@@ -123,6 +134,10 @@
     }else{
         [[picker presentViewController] dismissModalViewControllerAnimated:YES];
     }
+    
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        [popoverController dismissPopoverAnimated:YES];
+    }
 
 }
 
@@ -137,7 +152,7 @@
     }
     UITabBarController *controller = self.tabBarController;
     controller.selectedViewController = [controller.viewControllers objectAtIndex:0];
-    isShow = FALSE;
+    appdelegate.is_show = FALSE;
     return;
 }
 

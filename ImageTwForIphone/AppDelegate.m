@@ -25,6 +25,7 @@
 @synthesize user_id;
 @synthesize is_login;
 @synthesize loginStatus;
+@synthesize is_show;
 
 - (void)dealloc
 {
@@ -48,7 +49,7 @@
     } else {
         viewController1 = [[[FirstViewController alloc] initWithNibName:@"FirstViewController_iPad" bundle:nil] autorelease];
         viewController2 = [[[SecondViewController alloc] initWithNibName:@"SecondViewController_iPad" bundle:nil] autorelease];
-        viewController3 = [[[ThirdViewController alloc] initWithNibName:@"ThirdViewController" bundle:nil]autorelease];
+        viewController3 = [[[ThirdViewController alloc] initWithNibName:@"ThirdViewController_iPad" bundle:nil]autorelease];
     }
     self.tabBarController = [[[UITabBarController alloc] init] autorelease];
     self.tabBarController.viewControllers = [NSArray arrayWithObjects:viewController1, viewController2, viewController3,nil];

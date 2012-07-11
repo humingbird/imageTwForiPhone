@@ -10,6 +10,7 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>{
     BOOL *is_login;
+    BOOL is_show;
     NSString *user_id;
     NSString *loginStatus;
     
@@ -20,6 +21,7 @@
     NSArray *articleId;
 }
 @property(nonatomic,assign) BOOL *is_login;
+@property(nonatomic,assign) BOOL is_show;
 @property(nonatomic,assign) NSString *user_id;
 @property(nonatomic,assign) NSString *loginStatus;
 @property(nonatomic,assign) UIImage *postImage;

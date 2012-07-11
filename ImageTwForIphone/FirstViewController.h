@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+#import "Reachability.h"
 #import "AppDelegate.h"
 #import "FirstViewCell.h"
 #import "ImageLoad.h"
@@ -19,6 +21,8 @@
     IBOutlet UITableView *table;
     IBOutlet UIScrollView *scroll;
     IBOutlet UINavigationItem *navi;
+    
+    Reachability *reachability;
     
     NSMutableArray *articleId ;    
     NSMutableArray *imageUrl;    

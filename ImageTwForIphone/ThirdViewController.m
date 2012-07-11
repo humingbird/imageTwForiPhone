@@ -20,13 +20,15 @@
     if (self) {
         self.title = NSLocalizedString(@"all", @"Third");
         self.tabBarItem.image = [UIImage imageNamed:@"First"];
+        reachability = [Reachability reachabilityWithHostName:@"49.212.148.198"];
+        appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
+
     }
     return self;
 }
 
 //表示されるたびにtableのdataを再読み込み（本当はmemcacheとかにすべき）
 -(void)viewWillAppear:(BOOL)animated{
-    appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
     if(appdelegate.is_login){
         [self getArticleList];
         [table reloadData];
@@ -73,6 +75,7 @@
     }
     cell.topUserName.text=[userName objectAtIndex:indexPath.row];
     cell.comment.text=[description objectAtIndex:indexPath.row];
+    cell.commentUserName.text=[userName objectAtIndex:indexPath.row];
     
     //画像の読み込みだけは非同期
     cell.photo.image =nil;
@@ -100,6 +103,16 @@
 
 //APIを叩いて、データを格納する人(要素数は今は決めうち）
 -(void)getArticleList{
+    //圏外かどうかチェック
+    NSLog(@"reachability check");
+    reachability = [Reachability reachabilityWithHostName:@"49.212.148.198"];
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    
+    if(status == NotReachable){
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ネットワークエラー" message:@"圏外のため取得できませんでした" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    }else{
+    
     //listのAPIはget
     NSLog(@"%@",appdelegate.user_id);
     NSString *urlStr = @"http://49.212.148.198/imagetw/list.php?list=10&type=all";
@@ -134,7 +147,7 @@
         //NSLog(@"%@",[description description]);
         
     }   
-    
+    } 
     
 }
 

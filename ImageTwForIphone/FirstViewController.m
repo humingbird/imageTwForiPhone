@@ -22,11 +22,13 @@
         self.title = NSLocalizedString(@"List", @"First");
         self.tabBarItem.image = [UIImage imageNamed:@"first"];
     }
+    
     return self;
 }
 
 -(void)viewDidAppear:(BOOL)animated{
     //別画面遷移
+    
     appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
     if(!appdelegate.is_login){
         //keyChainにユーザ情報が入っていたらそれを使ってログインする
@@ -40,9 +42,20 @@
             [table reloadData];
         }else{
             NSLog(@"keyChain is nothing");
+            
+            //ネットワーク環境のチェック。圏外の場合はログイン遷移に飛ばさない
+            reachability = [Reachability reachabilityWithHostName:@"49.212.148.198"];
+            NetworkStatus status = [reachability currentReachabilityStatus];
+            if(status == NotReachable){
+                NSLog(@"not connection");
+                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ネットワークエラー" message:@"圏外のためログインできませんでした" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+                //圏外ですよ静的ページ挟んだらいい感じかも。
+            }else{
             LoginViewController *fvc =[[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
             [self presentModalViewController:fvc animated:YES];
             return;
+            }
         }
         
     }
@@ -50,7 +63,6 @@
 
 //表示されるたびにtableのdataを再読み込み（本当はmemcacheとかにすべき）
 -(void)viewWillAppear:(BOOL)animated{
-    NSLog(@"samplesample");
     if(appdelegate.is_login){
         [self getArticleList];
         [table reloadData];
@@ -110,6 +122,7 @@
     }
     cell.topUserName.text=[userName objectAtIndex:indexPath.row];
     cell.comment.text=[description objectAtIndex:indexPath.row];
+    cell.commentUserName.text = [userName objectAtIndex:indexPath.row];
     
     //画像の読み込みだけは非同期
     cell.photo.image =nil;
@@ -137,43 +150,51 @@
 
 //APIを叩いて、データを格納する人(要素数は今は決めうち）
 -(void)getArticleList{
-    //listのAPIはget
-    NSLog(@"%@",appdelegate.user_id);
-    NSString *urlStr = @"http://49.212.148.198/imagetw/list.php?list=10&user_id=";
-    NSString *param = [urlStr stringByAppendingString:appdelegate.user_id]; 
-    NSLog(@"%@",param);
+    //圏外かどうかチェック
+    reachability = [Reachability reachabilityWithHostName:@"49.212.148.198"];
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    if(status == NotReachable){
+        NSLog(@"not connection");
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ネットワークエラー" message:@"圏外のため取得できませんでした" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    }else{
+        //listのAPIはget
+        NSLog(@"%@",appdelegate.user_id);
+        NSString *urlStr = @"http://49.212.148.198/imagetw/list.php?list=10&user_id=";
+        NSString *param = [urlStr stringByAppendingString:appdelegate.user_id]; 
+        NSLog(@"%@",param);
     
-    NSURL *url = [NSURL URLWithString:param];
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        NSURL *url = [NSURL URLWithString:param];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
-    NSURLResponse *response =nil;
-    NSError *error = nil;
-    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        NSURLResponse *response =nil;
+        NSError *error = nil;
+        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     
-    if(error == nil){
-        NSString *resultString = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if(error == nil){
+            NSString *resultString = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
         
-        //返ってきたjson形式のデータを連想配列（NSMutableDitionary)にする。        
-        NSArray *jsonArray = [resultString JSONValue];
+            //返ってきたjson形式のデータを連想配列（NSMutableDitionary)にする。        
+            NSArray *jsonArray = [resultString JSONValue];
         
-        //id,imageUrl,descriptionを取得してそれぞれ配列に入れる
-        articleId = [[NSMutableArray alloc]init];
-        imageUrl = [[NSMutableArray alloc]init];
-        description = [[NSMutableArray alloc]init];
-        userName = [[NSMutableArray alloc]init];
+            //id,imageUrl,descriptionを取得してそれぞれ配列に入れる
+            articleId = [[NSMutableArray alloc]init];
+            imageUrl = [[NSMutableArray alloc]init];
+            description = [[NSMutableArray alloc]init];
+            userName = [[NSMutableArray alloc]init];
         
-        for(NSDictionary *dic in jsonArray){
-            [articleId addObject:[dic objectForKey:@"id"]];
-            [imageUrl addObject:[dic objectForKey:@"image_url"]];
-            [description addObject:[dic objectForKey:@"description"]];
-            [userName addObject:[dic objectForKey:@"username"]];
-        }
-        //NSLog(@"%@",[articleId description]);
-        //NSLog(@"%@",[imageUrl description]);
-        //NSLog(@"%@",[description description]);
+            for(NSDictionary *dic in jsonArray){
+                [articleId addObject:[dic objectForKey:@"id"]];
+                [imageUrl addObject:[dic objectForKey:@"image_url"]];
+                [description addObject:[dic objectForKey:@"description"]];
+                [userName addObject:[dic objectForKey:@"username"]];
+            }
+            //NSLog(@"%@",[articleId description]);
+            //NSLog(@"%@",[imageUrl description]);
+            //NSLog(@"%@",[description description]);
         
-    }   
-    
+        }   
+    }
     
 }
 

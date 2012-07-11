@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ImageColor.h"
+#import "AppDelegate.h"
 
 @interface SecondViewController:UIViewController
 <
@@ -25,6 +26,9 @@ UIImagePickerControllerDelegate
     
     UIImageView *iv;
     UIImage *preImage;
+    UIPopoverController *popoverController;
+
+    AppDelegate *appdelegate;
 }
 -(IBAction)doSave;
 -(IBAction)changeMonoChrome;
