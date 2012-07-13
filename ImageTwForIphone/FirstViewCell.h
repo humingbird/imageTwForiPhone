@@ -14,11 +14,12 @@
     IBOutlet UILabel *commentUserName;
     IBOutlet UILabel *comment;
     IBOutlet UIImageView *photo;
+    IBOutlet UIButton *iineButton;
 }
 @property(nonatomic,retain) IBOutlet UILabel *topUserName;
 @property(nonatomic,retain) IBOutlet UILabel *iine;
 @property(nonatomic,retain) IBOutlet UILabel *commentUserName;
 @property(nonatomic,retain) IBOutlet UILabel *comment;
 @property(nonatomic,retain) IBOutlet UIImageView *photo;
-
+@property(nonatomic,retain) IBOutlet UIButton *iineButton;
 @end

@@ -26,6 +26,9 @@
 @synthesize is_login;
 @synthesize loginStatus;
 @synthesize is_show;
+@synthesize highlightedFlag;
+@synthesize user_name;
+@synthesize highlightedFlagAll;
 
 - (void)dealloc
 {

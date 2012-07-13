@@ -13,6 +13,8 @@
 #import "ImageLoad.h"
 #import "SBJson.h"
 #import "KeyChain.h"
+#import "IineOperation.h"
+#import "IineDeleteOparation.h"
 
 @interface ThirdViewController : UIViewController{
     IBOutlet UINavigationItem *navi;
@@ -25,6 +27,9 @@
     NSMutableArray *description;
     NSMutableArray *userName;
     NSMutableArray *imageUrl;
+    NSMutableArray *iine;
+    NSMutableArray *iineUser;
+    NSMutableArray *iineCount;
     
     AppDelegate *appdelegate;
     

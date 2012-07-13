@@ -27,8 +27,6 @@
 }
 
 -(void)viewDidAppear:(BOOL)animated{
-    //別画面遷移
-    
     appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
     if(!appdelegate.is_login){
         //keyChainにユーザ情報が入っていたらそれを使ってログインする
@@ -75,7 +73,6 @@
     //画面移動
     UIBarButtonItem *logout = [[UIBarButtonItem alloc]initWithTitle:@"ログアウト" style:UIBarButtonItemStyleDone target:self action:@selector(doLogout:)];
     navi.leftBarButtonItem = logout;
-    
     table.dataSource = self;
     table.delegate = self;
     table.rowHeight = 291;
@@ -123,7 +120,15 @@
     cell.topUserName.text=[userName objectAtIndex:indexPath.row];
     cell.comment.text=[description objectAtIndex:indexPath.row];
     cell.commentUserName.text = [userName objectAtIndex:indexPath.row];
+    cell.iine.text = [iine objectAtIndex:indexPath.row];
     
+    //NSLog(@"%@",appdelegate.highlightedFlag);
+    
+    [cell.iineButton addTarget:self action:@selector(doIine:) forControlEvents:UIControlEventTouchUpInside];
+
+    BOOL *highlight = [[appdelegate.highlightedFlag objectAtIndex:indexPath.row] boolValue];
+
+    cell.iineButton.highlighted = highlight;     
     //画像の読み込みだけは非同期
     cell.photo.image =nil;
     //indicator(読み込み時にくるくるまわるやつ）をまずは表示
@@ -146,6 +151,49 @@
     
     
     return cell;
+}
+
+//いいねボタンが押された
+-(void)doIine:(id)sender{
+    NSLog(@"----- iine start ----");
+    //圏外かどうかチェック
+    reachability = [Reachability reachabilityWithHostName:@"49.212.148.198"];
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    if(status == NotReachable){
+        NSLog(@"not connection");
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ネットワークエラー" message:@"圏外のため登録できませんでした" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+    UIButton *btn = (UIButton *)sender;
+    FirstViewCell *cell = (FirstViewCell *)[[btn superview]superview];
+    int row = [table indexPathForCell:cell].row;
+    //BOOL型にまず戻してから判別処理をする
+    BOOL *highlight = [[appdelegate.highlightedFlag objectAtIndex:row] boolValue];
+    NSLog(@"doIine %d",highlight);
+    //highlight == 1の時がいいねボタンがすでに押されている状態
+    if(highlight){
+        //いいねがすでに押されている場合はいいね解除（テーブルのレコードを削除)
+        NSOperationQueue *queue = [[[NSOperationQueue alloc]init]autorelease];
+        IineDeleteOparation *ope = [[IineDeleteOparation alloc]initWithFileName:[articleId objectAtIndex:row] userId:(NSString *)appdelegate.user_id];
+        [queue addOperation:ope];
+        int newCount = [[iineCount objectAtIndex:row] intValue] -1;
+        [iineCount replaceObjectAtIndex:row withObject:[NSNumber numberWithInt:newCount]];
+    }else{
+        //いいねをする（テーブルのレコードを追加）
+        NSOperationQueue *queue = [[[NSOperationQueue alloc]init]autorelease];
+        IineOperation *ope = [[IineOperation alloc]initWithFileName:appdelegate.user_id cid:(NSString *)[articleId objectAtIndex:row]]; 
+        [queue addOperation:ope];
+        int newCount = [[iineCount objectAtIndex:row] intValue] +1;
+        [iineCount replaceObjectAtIndex:row withObject:[NSNumber numberWithInt:newCount]];
+    }
+    [appdelegate.highlightedFlag replaceObjectAtIndex:row withObject:[NSNumber numberWithBool:!highlight]];
+    NSLog(@"PreiineValue:%@",iine);
+    
+    [self reloadIine];
+    NSLog(@"NewiineValue:%@",iine);
+    //いいねの表記だけ切り替える(今は全部の表示を再読み込みしてる）
+    [table reloadData];
 }
 
 //APIを叩いて、データを格納する人(要素数は今は決めうち）
@@ -182,12 +230,44 @@
             imageUrl = [[NSMutableArray alloc]init];
             description = [[NSMutableArray alloc]init];
             userName = [[NSMutableArray alloc]init];
+            iine = [[NSMutableArray alloc]init];
+            iineCount = [[NSMutableArray alloc]init];
+            appdelegate.highlightedFlag = [[NSMutableArray alloc]init];
         
             for(NSDictionary *dic in jsonArray){
                 [articleId addObject:[dic objectForKey:@"id"]];
                 [imageUrl addObject:[dic objectForKey:@"image_url"]];
                 [description addObject:[dic objectForKey:@"description"]];
                 [userName addObject:[dic objectForKey:@"username"]];
+                [iineCount addObject:[NSNumber numberWithInt:[[dic objectForKey:@"count"] intValue]]];
+                
+                //count数から表示させる文言がかわるので、switch文で判別処理させる
+                NSLog(@"dic:%@",dic);
+                if([[dic objectForKey:@"count"] intValue] == 0){
+                    //0件のときは何も表示しない
+                    [iine addObject:@""];
+                }else if([[dic objectForKey:@"count"] intValue]>=1 && [[dic objectForKey:@"count"] intValue]<=3){
+                    //1~3件の場合はユーザ名を表示する
+                    NSString *userList = [self getUserNameList:[dic objectForKey:@"id"]];
+                    NSLog(@"userList %@",userList);
+                    
+                    NSArray *userlist = [userList JSONValue];
+                    NSLog(@"userlist:%@",userlist);
+                    NSMutableString *user=[NSMutableString string];
+                    for(NSDictionary *dict in userlist){
+                        [user appendFormat:@"%@,",[dict objectForKey:@"username"]];
+                    }
+                    [user appendString:@"からのいいね"];
+                    NSLog(@"%@",user);
+                    [iine addObject:user];                    
+                }else if([[dic objectForKey:@"count"] intValue]>=4){
+                    //4件以上の場合は件数をそのまま表示する
+                    [iine addObject:[NSString stringWithFormat:@"%@件のいいね",[dic objectForKey:@"count"]]];
+                }
+                //いいねボタンのハイライト判別のためのフラグを入れる。
+                 NSNumber *flag = [self getIineStatus:[dic objectForKey:@"id"]];
+                NSLog(@"iineFlag:%@",flag);
+                [appdelegate.highlightedFlag addObject:flag];
             }
             //NSLog(@"%@",[articleId description]);
             //NSLog(@"%@",[imageUrl description]);
@@ -196,6 +276,42 @@
         }   
     }
     
+}
+
+//いいねボタンが押された場合のいいね表示の再取得
+-(void)reloadIine{
+    int num = 0;
+    for(id value in iineCount){
+        if([value intValue] == 0){
+            //0件のときは何も表示しない
+            [iine replaceObjectAtIndex:num withObject:@""];
+        }else if([value intValue]>=1 && [value intValue]<=3){
+            //1~3件の場合はユーザ名を表示する
+            NSLog(@"articleId:%@",[articleId objectAtIndex:num]);
+            NSString *userList = [self getUserNameList:[articleId objectAtIndex:num]];
+            NSLog(@"userList %@",userList);
+            
+            NSArray *userlist = [userList JSONValue];
+            NSLog(@"userlist:%@",userlist);
+            NSMutableString *user=[NSMutableString string];
+            if(userlist){
+                for(NSDictionary *dict in userlist){
+                    [user appendFormat:@"%@,",[dict objectForKey:@"username"]];
+                }
+            }else{
+                appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
+                NSLog(@"%@",appdelegate.user_name);
+                [user appendFormat:@"%@",appdelegate.user_name];
+            }
+            [user appendString:@"からのいいね"];
+            NSLog(@"userName:%@",user);
+            [iine replaceObjectAtIndex:num withObject:user];                    
+        }else if([value intValue]>=4){
+            //4件以上の場合は件数をそのまま表示する
+            [iine replaceObjectAtIndex:num withObject:[NSString stringWithFormat:@"%@件のいいね",value]];
+        }
+        num = num +1;
+    }
 }
 
 //indicatorの入ったsubViewを削除して、読み込んだ画像をセットする
@@ -240,6 +356,51 @@
     //再読み込み
     [self viewDidAppear:YES];
   
+}
+
+//いいね表示用のユーザ名をAPIから取得する
+-(NSString *)getUserNameList:(NSString *)commentId{
+    NSString *urlStr = @"http://49.212.148.198/imagetw/iine.php?mode=2&comment_id=";
+    
+    NSString *param = [NSString stringWithFormat:@"%@%@",urlStr,commentId];
+    NSLog(@"getUserNameListQuery: %@",param);
+    
+    
+    NSURL *url = [NSURL URLWithString:param];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    
+    NSURLResponse *response =nil;
+    NSError *error = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    if(error == nil){
+        NSString *resultString = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        return resultString;
+    }
+    return nil;
+    
+}
+
+//いいねの状態をAPIから取得する
+-(NSNumber *)getIineStatus:(NSString *)commentId{
+    NSString *urlStr = @"http://49.212.148.198/imagetw/iine.php?mode=3&comment_id=";
+    
+    NSString *param = [NSString stringWithFormat:@"%@%@&user_id=%@",urlStr,commentId,appdelegate.user_id];
+    NSLog(@"getUserNameListQuery: %@",param);
+    
+    
+    NSURL *url = [NSURL URLWithString:param];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    
+    NSURLResponse *response =nil;
+    NSError *error = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    if(error == nil){
+        NSString *resultString = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        return [NSNumber numberWithInt:[resultString intValue]];
+    }
+        
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

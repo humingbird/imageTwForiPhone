@@ -113,7 +113,6 @@
 
 //新規登録処理
 -(void)doCreate:(id)sender{
-    
     //パスワードは暗号化
     NSString *sample = [self NSStringToSha1String:password];
     //暗号化したものをpost
@@ -121,6 +120,8 @@
     NSLog(@"userCreate is success user_id =%@",appdelegate.user_id);
     //keychainに情報を保存する
     [KeyChain create:password username:username];
+    appdelegate=(AppDelegate *)[[UIApplication sharedApplication]delegate];
+    appdelegate.user_name = username;
     //ユーザIDが取れたらこのページを閉じる
     [self dismissModalViewControllerAnimated:YES];
 }
@@ -132,6 +133,8 @@
     NSLog(@"%@",appdelegate.loginStatus);
     if([appdelegate.loginStatus isEqualToString:@"1"]){
         [KeyChain create:password username:username];
+        appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
+        appdelegate.user_name = username;
         [self dismissModalViewControllerAnimated:YES];
     }
 }
@@ -147,6 +150,7 @@
     
         AppDelegate *appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
         if([appdelegate.loginStatus isEqualToString:@"1"]){
+            appdelegate.user_name = userName;
             [lvc dismissModalViewControllerAnimated:YES];
         }
     }

@@ -14,6 +14,7 @@
 @synthesize commentUserName;
 @synthesize iine;
 @synthesize comment;
+@synthesize iineButton;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

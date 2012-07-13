@@ -13,12 +13,15 @@
     BOOL is_show;
     NSString *user_id;
     NSString *loginStatus;
+    NSString *user_name;
     
     UIImage *postImage;
     UIImage *preImage;
     BOOL isImage;
     NSString *imageUrl;
     NSArray *articleId;
+    NSMutableArray *highlightedFlag;
+    NSMutableArray *highlightedFlagAll;
 }
 @property(nonatomic,assign) BOOL *is_login;
 @property(nonatomic,assign) BOOL is_show;
@@ -29,6 +32,9 @@
 @property(nonatomic,assign) NSString *imageUrl;
 @property(nonatomic,assign) NSArray *articleId;
 @property (strong, nonatomic) UIWindow *window;
+@property(nonatomic,assign) NSMutableArray *highlightedFlag;
+@property(nonatomic,assign) NSString *user_name;
+@property(nonatomic,assign) NSMutableArray *highlightedFlagAll;
 
 @property (strong, nonatomic) UITabBarController *tabBarController;
 
