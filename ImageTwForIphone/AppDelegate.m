@@ -29,12 +29,19 @@
 @synthesize highlightedFlag;
 @synthesize user_name;
 @synthesize highlightedFlagAll;
+@synthesize articleIdForComment;
 
 - (void)dealloc
 {
     [_window release];
     [_tabBarController release];
     [super dealloc];
+}
+
+void uncaughtExceptionHandler(NSException *exception) {
+    NSLog(@"CRASH: %@", exception);
+    NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
+    // Internal error reporting
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -58,6 +65,9 @@
     self.tabBarController.viewControllers = [NSArray arrayWithObjects:viewController1, viewController2, viewController3,nil];
     self.window.rootViewController = self.tabBarController;
     [self.window makeKeyAndVisible];
+    
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+    
     return YES;
 }
 

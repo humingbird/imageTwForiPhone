@@ -79,7 +79,9 @@
     NSLog(@"%@",path);
     
     //フォームのテキストデータの取得(comment.text)で取得できる。
+    [comment resignFirstResponder];
     NSString *text = comment.text;
+        NSLog(@"----- post comment ---- %@",text);
     //画像ファイルをサーバに保存する
     //戻ってきたURLと一緒にテキストデータ情報も一緒に登録
     NSOperationQueue *queue =[NSOperationQueue mainQueue];

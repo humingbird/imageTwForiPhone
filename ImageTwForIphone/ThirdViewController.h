@@ -15,6 +15,7 @@
 #import "KeyChain.h"
 #import "IineOperation.h"
 #import "IineDeleteOparation.h"
+#import "CommentViewController.h"
 
 @interface ThirdViewController : UIViewController{
     IBOutlet UINavigationItem *navi;

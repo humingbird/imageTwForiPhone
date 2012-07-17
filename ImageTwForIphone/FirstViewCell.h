@@ -15,6 +15,7 @@
     IBOutlet UILabel *comment;
     IBOutlet UIImageView *photo;
     IBOutlet UIButton *iineButton;
+    IBOutlet UIButton *commentButton;
 }
 @property(nonatomic,retain) IBOutlet UILabel *topUserName;
 @property(nonatomic,retain) IBOutlet UILabel *iine;
@@ -22,4 +23,5 @@
 @property(nonatomic,retain) IBOutlet UILabel *comment;
 @property(nonatomic,retain) IBOutlet UIImageView *photo;
 @property(nonatomic,retain) IBOutlet UIButton *iineButton;
+@property(nonatomic,retain) IBOutlet UIButton *commentButton;
 @end

@@ -83,15 +83,18 @@
         ipc.sourceType = sourceType;
         ipc.mediaTypes = [NSArray arrayWithObject:@"public.image"];
         ipc.delegate = self;
+        ipc.modalInPopover = YES;
         
         //iPadではUIImagePickerControllerを直に呼ぶと落ちるので、UIPopoverControllerに乗っけて表示
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            NSLog(@"----- ipad mode----");
             popoverController = [[UIPopoverController alloc] initWithContentViewController:ipc];
             [popoverController presentPopoverFromBarButtonItem:self.tabBarItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
             appdelegate.is_show = TRUE;
         }else{
+            NSLog(@"-----iphone mode-----");
             [self presentModalViewController:ipc animated:TRUE];
-            [ipc release];
+            //[ipc release];
             appdelegate.is_show = TRUE;
         }
         //カメラの撮影画面のボタンメニューを消す

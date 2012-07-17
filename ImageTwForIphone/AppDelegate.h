@@ -22,6 +22,7 @@
     NSArray *articleId;
     NSMutableArray *highlightedFlag;
     NSMutableArray *highlightedFlagAll;
+    NSString *articleIdForComment;
 }
 @property(nonatomic,assign) BOOL *is_login;
 @property(nonatomic,assign) BOOL is_show;
@@ -35,6 +36,7 @@
 @property(nonatomic,assign) NSMutableArray *highlightedFlag;
 @property(nonatomic,assign) NSString *user_name;
 @property(nonatomic,assign) NSMutableArray *highlightedFlagAll;
+@property(nonatomic,assign) NSString *articleIdForComment;
 
 @property (strong, nonatomic) UITabBarController *tabBarController;
 

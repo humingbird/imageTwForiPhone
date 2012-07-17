@@ -136,6 +136,10 @@
         appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
         appdelegate.user_name = username;
         [self dismissModalViewControllerAnimated:YES];
+    }else{
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ログインエラー" message:@"ユーザid,またはパスワードが間違っています" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        [alert show];
+        
     }
 }
 

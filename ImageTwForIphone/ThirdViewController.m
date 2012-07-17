@@ -45,6 +45,7 @@
     table.dataSource = self;
     table.delegate = self;
     table.rowHeight = 291;
+    table.allowsSelection = NO;
     [scroll addSubview:table];
     [scroll setContentSize:table.frame.size];
     // Do any additional setup after loading the view from its nib.
@@ -81,6 +82,7 @@
     //NSLog(@"%@",appdelegate.highlightedFlag);
     
     [cell.iineButton addTarget:self action:@selector(doIine:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.commentButton addTarget:self action:@selector(doComment:) forControlEvents:UIControlEventTouchUpInside];
     
     BOOL *highlight = [[appdelegate.highlightedFlagAll objectAtIndex:indexPath.row] boolValue];
     
@@ -153,6 +155,21 @@
     [table reloadData];
 }
 
+
+//コメントボタンが押されたら別画面に遷移
+-(void)doComment:(id)sender{
+    NSLog(@"----move comment view----");
+    //ボタンが押された場所の記事idを取得する（delegateに入れるけど、画面遷移が終了したら必ず削除する）
+    UIButton *button = (UIButton *)sender;
+    FirstViewCell *cell = (FirstViewCell *)[[button superview]superview];
+    int row = [table indexPathForCell:cell].row;
+    appdelegate.articleIdForComment = [articleId objectAtIndex:row];
+    
+    CommentViewController *cvc = [[CommentViewController alloc]initWithNibName:@"CommentViewController" bundle:nil];
+    [self presentModalViewController:cvc animated:YES];
+    [cvc release];
+    
+}
 
 //APIを叩いて、データを格納する人(要素数は今は決めうち）
 -(void)getArticleList{
