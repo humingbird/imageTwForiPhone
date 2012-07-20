@@ -31,6 +31,7 @@
 -(void)viewWillAppear:(BOOL)animated{
     if(!appdelegate.is_show){
     
+        //ActionSheetの呼び出し
         UIActionSheet *ac = [[UIActionSheet alloc]initWithTitle:@"photo" delegate:self cancelButtonTitle:@"キャンセル" destructiveButtonTitle:@"カメラで撮影" otherButtonTitles:
                 @"カメラロールの画像を使う", nil];
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
@@ -79,16 +80,23 @@
         }
         
         //imagePicker
-        UIImagePickerController *ipc = [[[UIImagePickerController alloc]init]autorelease];
+        ipc = [[[UIImagePickerController alloc]init]autorelease];
         ipc.sourceType = sourceType;
         ipc.mediaTypes = [NSArray arrayWithObject:@"public.image"];
         ipc.delegate = self;
-        ipc.modalInPopover = YES;
         
         //iPadではUIImagePickerControllerを直に呼ぶと落ちるので、UIPopoverControllerに乗っけて表示
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             NSLog(@"----- ipad mode----");
+            
+            if(popoverController){
+                NSLog(@"-------- popoverController isPopoverVisible ----------");
+                if([popoverController isPopoverVisible]){
+                    [popoverController dismissPopoverAnimated:YES];
+                }
+            }
             popoverController = [[UIPopoverController alloc] initWithContentViewController:ipc];
+            popoverController.delegate = self;
             [popoverController presentPopoverFromBarButtonItem:self.tabBarItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
             appdelegate.is_show = TRUE;
         }else{
@@ -116,6 +124,10 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     isShow = FALSE;
+    
+    //リセットボタン
+    UIBarButtonItem *reset = [[UIBarButtonItem alloc]initWithTitle:@"取り消し" style:UIBarButtonSystemItemCancel target:self action:@selector(doReset:)];
+    navi.leftBarButtonItem = reset;
 
 }
 
@@ -139,6 +151,7 @@
     }
     
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        
         [popoverController dismissPopoverAnimated:YES];
     }
 
@@ -146,6 +159,7 @@
 
 
 -(void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+    
     NSLog(@"キャンセル");
     
     if([picker respondsToSelector:@selector(presentingViewController)]){
@@ -155,6 +169,10 @@
     }
     UITabBarController *controller = self.tabBarController;
     controller.selectedViewController = [controller.viewControllers objectAtIndex:0];
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        
+        [popoverController dismissPopoverAnimated:YES];
+    }
     appdelegate.is_show = FALSE;
     return;
 }
@@ -206,7 +224,7 @@
     UIImage *changedImage;
     changedImage = [ImageColor sepia:aImage];
     [image setImage:changedImage];
-
+    [changedImage release];
 }
 
 //元の画像に戻す
@@ -215,10 +233,55 @@
     [image setImage:aImage];
 }
 
+//取り消し処理
+-(void)doReset:(id)sender{
+    //一応戻るかどうか聞く。alert内のボタンイベントを取得したいのでcustomAlertViewを使う
+    alertMode = 1;
+    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"取り消し処理" message:@"編集中の画像を削除しますか？" delegate:self cancelButtonTitle:@"はい" otherButtonTitles:@"いいえ", nil];
+    [alert show];
+
+}
+
+/**
+ UIAlertViewのボタンのデリゲート
+ alertModeは複数のAlertViewが存在する場合に、引きずられて処理が行われないようにするため
+*/
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    switch (alertMode) {
+        case 1:
+            if(buttonIndex == 0){
+                //UIImageViewに乗ってるimageの削除
+                [image setImage:nil];
+                //自分の投稿一覧タブに切り替える
+                UITabBarController *tbc = self.tabBarController;
+                tbc.selectedViewController = [tbc.viewControllers objectAtIndex:0];
+                appdelegate.is_show = FALSE;
+                self.tabBarController.tabBar.userInteractionEnabled = YES;
+                return;
+            }
+            break;
+            
+        default:
+            break;
+    }
+}
+
+//popoverが消えた後の処理
+-(void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController{
+    NSLog(@"------ popover closed-------");
+    //自分の投稿一覧タブに切り替える
+    UITabBarController *controller = self.tabBarController;
+    controller.selectedViewController = [controller.viewControllers objectAtIndex:0];
+    appdelegate.is_show = FALSE;
+    return;
+    
+}
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
+    appdelegate.is_show = FALSE;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

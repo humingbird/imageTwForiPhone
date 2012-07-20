@@ -13,6 +13,13 @@
 
 //モノクロにする処理
 +(UIImage *)monochrome:(UIImage *)anImage{
+    
+    //カメラから取得した画像が90度回転しないための処理
+    UIGraphicsBeginImageContext(anImage.size);
+    [anImage drawInRect:CGRectMake(0, 0, anImage.size.width, anImage.size.height)];
+    anImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsGetImageFromCurrentImageContext();
+    
     CGImageRef imageRef;
     imageRef = anImage.CGImage;
     
@@ -107,6 +114,13 @@
 
 
 +(UIImage *)sepia:(UIImage *)seImage{
+    
+    //カメラから取得した画像が90度回転しないための処理
+    UIGraphicsBeginImageContext(seImage.size);
+    [seImage drawInRect:CGRectMake(0, 0, seImage.size.width, seImage.size.height)];
+    seImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsGetImageFromCurrentImageContext();
+    
     CGImageRef seimageRef;
     seimageRef = seImage.CGImage;
     
@@ -149,16 +163,16 @@
             tmp = buffer + y * bytesPerRow + x * 4;
             
             UInt8 red,green,blue;
-            red = *(tmp + 0);
-            green = *(tmp +1);
-            blue = *(tmp+2);
+            blue = *(tmp +0);
+            green = *(tmp+1);
+            red = *(tmp+2);
             
             UInt8 brightness;
             brightness = (77 * red + 28 * green + 151 *blue)/256;
             
-            *(tmp + 0) = brightness;
-            *(tmp +1) = brightness*0.7;
-            *(tmp +2) = brightness*0.4;
+            *(tmp + 0) = brightness*0.4; //blue
+            *(tmp +1) = brightness*0.7; //green
+            *(tmp +2) = brightness; //red
         }
     }
 
@@ -184,7 +198,6 @@
     //CGImageRelease(seimageRef);
     
     return effectedImage;
-
 }
 
 @end

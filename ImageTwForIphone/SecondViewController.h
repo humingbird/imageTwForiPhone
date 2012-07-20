@@ -19,6 +19,7 @@ UIImagePickerControllerDelegate
     BOOL isShow;
     IBOutlet UIImageView *image;
     IBOutlet UIButton *button;
+    IBOutlet UINavigationItem *navi;
     
     IBOutlet UIButton *monochrome;
     IBOutlet UIButton *sepia;
@@ -27,6 +28,9 @@ UIImagePickerControllerDelegate
     UIImageView *iv;
     UIImage *preImage;
     UIPopoverController *popoverController;
+    UIImagePickerController *ipc;
+    
+    int alertMode;
 
     AppDelegate *appdelegate;
 }

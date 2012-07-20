@@ -44,7 +44,11 @@
     
     table.dataSource = self;
     table.delegate = self;
-    table.rowHeight = 291;
+    if(UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad){
+        table.rowHeight = 306;
+    }else{
+          table.rowHeight = 168;
+    }
     table.allowsSelection = NO;
     [scroll addSubview:table];
     [scroll setContentSize:table.frame.size];
@@ -71,7 +75,11 @@
                                             dequeueReusableCellWithIdentifier:CellIdentifier];
     if(cell == nil){
         UIViewController *vc;
-        vc = [[UIViewController alloc]initWithNibName:@"topTable" bundle:nil];
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            vc = [[UIViewController alloc]initWithNibName:@"topTableForIpad" bundle:nil];   
+        }else{
+            vc = [[UIViewController alloc]initWithNibName:@"topTable" bundle:nil];
+        }
         cell = (FirstViewCell *)vc.view;
     }
     cell.topUserName.text=[userName objectAtIndex:indexPath.row];

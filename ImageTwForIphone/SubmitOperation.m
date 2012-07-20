@@ -104,7 +104,7 @@
     NSMutableData *requestData =[[NSMutableData alloc]init];
     [requestData appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSASCIIStringEncoding]];
     [requestData appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"comment\"\r\n\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];
-    [requestData appendData:[[NSString stringWithFormat:@"%@",comment] dataUsingEncoding:NSASCIIStringEncoding]];
+    [requestData appendData:[[NSString stringWithFormat:@"%@",comment] dataUsingEncoding:NSUTF8StringEncoding]];
     [requestData appendData:[[NSString stringWithString:@"\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];
     [requestData appendData:[[NSString stringWithFormat:@"--%@--\r\n\r\n", boundary] dataUsingEncoding:NSASCIIStringEncoding]];
     

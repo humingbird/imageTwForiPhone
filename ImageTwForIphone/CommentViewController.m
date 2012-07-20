@@ -52,7 +52,7 @@
 }
 
 -(void)keyboardWillShow:(NSNotification*)notification{
-    NSDictionary *userInfo;
+    NSDictionary *userInfo = nil;
     [notification userInfo];
     
     CGFloat overlap;
@@ -161,8 +161,11 @@
 
 
 -(void)doPost:(id)sender{
+    NSLog(@"----- do Post start -----");
     //textFieldの要素を取得。
+    [textFiled resignFirstResponder];
     NSString *comment = textFiled.text;
+    NSLog(@"Comment:%@",comment);
     if([comment isEqualToString:nil]){
         //なにも入力してなかったらエラー出してなにもしない。
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"登録エラー" message:@"コメントを入力してください" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];

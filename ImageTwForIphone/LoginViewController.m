@@ -88,7 +88,7 @@
         textField.returnKeyType = UIReturnKeyDone;
         textField.delegate = self;
         textField.tag = indexPath.section;
-        textField.keyboardType =(indexPath.section==0)?UIKeyboardTypeEmailAddress:UIKeyboardTypeASCIICapable;
+        textField.keyboardType = UIKeyboardTypeEmailAddress;
         textField.secureTextEntry = (indexPath.section ==1);
     
         [cell.contentView addSubview:textField];
@@ -113,6 +113,12 @@
 
 //新規登録処理
 -(void)doCreate:(id)sender{
+    //入力内容が空の場合はalertを出して返す
+    if([username length] == 0 || [password length] == 0){
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"登録エラー" message:@"ユーザID,またはパスワードが入力されていません" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
     //パスワードは暗号化
     NSString *sample = [self NSStringToSha1String:password];
     //暗号化したものをpost

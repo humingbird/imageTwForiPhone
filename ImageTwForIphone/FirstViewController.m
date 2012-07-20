@@ -26,6 +26,7 @@
     return self;
 }
 
+
 -(void)viewDidAppear:(BOOL)animated{
     appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
     if(!appdelegate.is_login){
@@ -73,9 +74,15 @@
     //画面移動
     UIBarButtonItem *logout = [[UIBarButtonItem alloc]initWithTitle:@"ログアウト" style:UIBarButtonItemStyleDone target:self action:@selector(doLogout:)];
     navi.leftBarButtonItem = logout;
+    
     table.dataSource = self;
     table.delegate = self;
-    table.rowHeight = 291;
+    
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        table.rowHeight = 168;
+    }else {
+        table.rowHeight = 300;
+    }
     table.allowsSelection = NO;
     [scroll addSubview:table];
     [scroll setContentSize:table.frame.size];
@@ -115,7 +122,12 @@
                                             dequeueReusableCellWithIdentifier:CellIdentifier];
     if(cell == nil){
         UIViewController *vc;
-        vc = [[UIViewController alloc]initWithNibName:@"topTable" bundle:nil];
+        //デバイスによって表示形式を変える
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            vc = [[UIViewController alloc]initWithNibName:@"topTableForIpad" bundle:nil];   
+        }else{
+            vc = [[UIViewController alloc]initWithNibName:@"topTable" bundle:nil];
+        }
         cell = (FirstViewCell *)vc.view;
     }
     cell.topUserName.text=[userName objectAtIndex:indexPath.row];
@@ -421,12 +433,13 @@
         
 }
 
+//画面回転の可否を決めるメソッド
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
     } else {
-        return YES;
+        return NO;
     }
 }
 
