@@ -30,6 +30,8 @@
 @synthesize user_name;
 @synthesize highlightedFlagAll;
 @synthesize articleIdForComment;
+@synthesize myListIine;
+@synthesize iineIndexPath;
 
 - (void)dealloc
 {

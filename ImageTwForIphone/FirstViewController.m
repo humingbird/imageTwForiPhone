@@ -8,6 +8,7 @@
 
 #import "FirstViewController.h"
 #import "ImageLoad.h"
+#import "IinePost.h"
 
 @interface FirstViewController ()
 
@@ -25,7 +26,6 @@
     
     return self;
 }
-
 
 -(void)viewDidAppear:(BOOL)animated{
     appdelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
@@ -130,11 +130,13 @@
         }
         cell = (FirstViewCell *)vc.view;
     }
-    cell.topUserName.text=[userName objectAtIndex:indexPath.row];
-    cell.comment.text=[description objectAtIndex:indexPath.row];
-    cell.commentUserName.text = [userName objectAtIndex:indexPath.row];
-    cell.iine.text = [iine objectAtIndex:indexPath.row];
+    if(userName != nil){
+        cell.topUserName.text=[userName objectAtIndex:indexPath.row];
+        cell.comment.text=[description objectAtIndex:indexPath.row];
+        cell.commentUserName.text = [userName objectAtIndex:indexPath.row];
     
+     
+    cell.iine.text = [iine objectAtIndex:indexPath.row];
     //NSLog(@"%@",appdelegate.highlightedFlag);
     
     [cell.iineButton addTarget:self action:@selector(doIine:) forControlEvents:UIControlEventTouchUpInside];
@@ -153,18 +155,20 @@
                  autorelease];
     indicator.frame = cell.photo.bounds;
     indicator.contentMode = UIViewContentModeCenter;
+    
+    //indicatorの表示
     [indicator startAnimating];
     [cell.photo addSubview:indicator];
     //非同期で画像を取得してくるクラスを呼び出す
     ImageLoad *delegate;
     delegate = [[[ImageLoad alloc]init]autorelease];
+    NSLog(@"------ imageDelegate  %@-------",indexPath);
     delegate.indexPath = indexPath;
     [[NSNotificationCenter defaultCenter]
      addObserver:self selector:@selector(loadImageDidEnd:) name:kConnectionDidFinishNotification object:delegate];
     
     [delegate connectionWithPath:[imageUrl objectAtIndex:indexPath.row]]; 
-    
-    
+    }
     return cell;
 }
 
@@ -229,15 +233,17 @@
 //APIを叩いて、データを格納する人(要素数は今は決めうち）
 -(void)getArticleList{
     //圏外かどうかチェック
+    NSLog(@"------- reachability start ---------");
     reachability = [Reachability reachabilityWithHostName:@"49.212.148.198"];
     NetworkStatus status = [reachability currentReachabilityStatus];
+    NSLog(@"------ reachability end-----------");
     if(status == NotReachable){
         NSLog(@"not connection");
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ネットワークエラー" message:@"圏外のため取得できませんでした" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
     }else{
         //listのAPIはget
-        NSLog(@"%@",appdelegate.user_id);
+        NSLog(@"-------- http connection start --------");
         NSString *urlStr = @"http://49.212.148.198/imagetw/list.php?list=10&user_id=";
         NSString *param = [urlStr stringByAppendingString:appdelegate.user_id]; 
         NSLog(@"%@",param);
@@ -248,12 +254,18 @@
         NSURLResponse *response =nil;
         NSError *error = nil;
         NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        NSLog(@"-------- http connection end-------");
     
         if(error == nil){
+            NSLog(@"------- jsonArray start--------");
             NSString *resultString = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        
+            NSLog(@"------- resultString  %@--------",resultString);
+            
+            //NSRange match = [resultString rangeOfString:@"\"id\":null"];
+            //if(match.location != NSNotFound){
             //返ってきたjson形式のデータを連想配列（NSMutableDitionary)にする。        
             NSArray *jsonArray = [resultString JSONValue];
+            NSLog(@"------jsonArray is %@",jsonArray);
         
             //id,imageUrl,descriptionを取得してそれぞれ配列に入れる
             articleId = [[NSMutableArray alloc]init];
@@ -265,6 +277,10 @@
             appdelegate.highlightedFlag = [[NSMutableArray alloc]init];
         
             for(NSDictionary *dic in jsonArray){
+                if([dic objectForKey:@"id"] == [NSNull null]){
+                    NSLog(@"userList is notFound");
+                    break;
+                }
                 [articleId addObject:[dic objectForKey:@"id"]];
                 [imageUrl addObject:[dic objectForKey:@"image_url"]];
                 [description addObject:[dic objectForKey:@"description"]];
@@ -272,7 +288,6 @@
                 [iineCount addObject:[NSNumber numberWithInt:[[dic objectForKey:@"count"] intValue]]];
                 
                 //count数から表示させる文言がかわるので、switch文で判別処理させる
-                NSLog(@"dic:%@",dic);
                 if([[dic objectForKey:@"count"] intValue] == 0){
                     //0件のときは何も表示しない
                     [iine addObject:@""];
@@ -299,12 +314,20 @@
                 NSLog(@"iineFlag:%@",flag);
                 [appdelegate.highlightedFlag addObject:flag];
             }
+                
+            }
+ /*           //いいね取得
+            NSOperationQueue *queue = [[[NSOperationQueue alloc]init]autorelease];
+            IineListOperation *ope = [[IineListOperation alloc]initWithIineData:iineCount articleId:(NSMutableString *)articleId];
+            
+            [queue addOperation:ope];
+  */         //} 
+            NSLog(@"------ jsonArray end---------");
             //NSLog(@"%@",[articleId description]);
             //NSLog(@"%@",[imageUrl description]);
             //NSLog(@"%@",[description description]);
         
-        }   
-    }
+        }
     
 }
 
@@ -344,9 +367,10 @@
     }
 }
 
+
 //indicatorの入ったsubViewを削除して、読み込んだ画像をセットする
 -(void)loadImageDidEnd:(NSNotification *)notification{
-    ImageLoad *delegate = (ImageLoad *)[notification object];
+   ImageLoad *delegate = (ImageLoad *)[notification object];
     
     if(delegate !=nil){
         NSIndexPath *indexPath = nil;
@@ -355,11 +379,14 @@
     if([notification userInfo] == nil){
         imageData = delegate.data;
         indexPath = delegate.indexPath;
+
     }
     
         if((imageData != nil)){
             FirstViewCell *cell;
+            NSLog(@"------ image indexPath %@------",indexPath);
             cell =(FirstViewCell *)[table cellForRowAtIndexPath:indexPath];
+            NSLog(@"----- image cell ------- %@",cell);
             if(cell !=nil){
                 for(UIView *subView in cell.photo.subviews){
                     [subView removeFromSuperview];
@@ -432,6 +459,8 @@
     }
         
 }
+
+
 
 //画面回転の可否を決めるメソッド
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

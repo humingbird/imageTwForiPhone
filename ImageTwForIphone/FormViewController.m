@@ -32,9 +32,11 @@
     //ボタンのイベント設定
     UIBarButtonItem *saveButton = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(doSave:)];
     navi.rightBarButtonItem = saveButton;
+    [saveButton release];
     
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemReply target:self action:@selector(doReply:)];
     navi.leftBarButtonItem = backButton;
+    [backButton release];
     
     //登録したい画像の取得
     appDelegate =(AppDelegate *)[[UIApplication sharedApplication]delegate];    
@@ -49,6 +51,7 @@
     if(status == NotReachable){
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ネットワークエラー" message:@"圏外なので投稿できません" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
+        [alert release];
     }else{
     NSLog(@"登録処理しますよ");    
     //ipadの画像サイズがでかすぎて読み込みに時間がかかりすぎるので、暫定的に決めうちリサイズ
@@ -89,11 +92,16 @@
     SubmitOperation *ope2 = [[SubmitOperation alloc]initWithFileName:fileName comment:(NSString *)text _imageData:(NSData *)imageData];
     [queue addOperation:ope1];
     [queue addOperation:ope2];
+        
+    [imageData release];
+    [ope1 release];
+    [ope2 release];
     //ローカルにも画像ファイルを保存
     UIImageWriteToSavedPhotosAlbum(resizeImage, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
     //登録が全部うまく行ったらうまくいったよ処理
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"登録処理完了" message:@"登録が完了しました" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];
+    [alert release];
     //タブを切り替えて、最初のページを表示する（今は撮影画面に戻るだけ）
     }
     [self dismissModalViewControllerAnimated:YES];

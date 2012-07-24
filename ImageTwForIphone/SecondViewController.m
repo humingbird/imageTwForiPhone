@@ -128,6 +128,7 @@
     //リセットボタン
     UIBarButtonItem *reset = [[UIBarButtonItem alloc]initWithTitle:@"取り消し" style:UIBarButtonSystemItemCancel target:self action:@selector(doReset:)];
     navi.leftBarButtonItem = reset;
+    [reset release];
 
 }
 
@@ -181,12 +182,13 @@
     NSLog(@"保存終了");
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"保存終了" message:@"アルバムに写真を追加しました" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];
+    [alert release];
     
     //別画面遷移
     FormViewController *fvc =[[FormViewController alloc]initWithNibName:@"FormViewController" bundle:nil];
     [self presentModalViewController:fvc animated:YES];
 
-    
+    [fvc release];
 }
 
  -(IBAction)doSave{
@@ -201,12 +203,14 @@
     if(aImage == nil){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー" message:@"画像を選択してください" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
+        [alert release];
         return;
     }
      
      //別画面遷移
      FormViewController *fvc =[[FormViewController alloc]initWithNibName:@"FormViewController" bundle:nil];
      [self presentModalViewController:fvc animated:YES];
+     [fvc release];
 }
 
 //画像をモノクロにする
@@ -215,7 +219,6 @@
     UIImage *changedImage;
     changedImage = [ImageColor monochrome:aImage];
     [image setImage:changedImage];
-    [changedImage release];
 }
 
 //画像をセピアにする
@@ -224,7 +227,6 @@
     UIImage *changedImage;
     changedImage = [ImageColor sepia:aImage];
     [image setImage:changedImage];
-    [changedImage release];
 }
 
 //元の画像に戻す
@@ -239,6 +241,7 @@
     alertMode = 1;
     UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"取り消し処理" message:@"編集中の画像を削除しますか？" delegate:self cancelButtonTitle:@"はい" otherButtonTitles:@"いいえ", nil];
     [alert show];
+    [alert release];
 
 }
 

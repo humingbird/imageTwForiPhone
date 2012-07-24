@@ -23,6 +23,9 @@
     NSMutableArray *highlightedFlag;
     NSMutableArray *highlightedFlagAll;
     NSString *articleIdForComment;
+    
+    NSMutableArray *myListIine;
+    NSIndexPath *iineIndexPath;
 }
 @property(nonatomic,assign) BOOL *is_login;
 @property(nonatomic,assign) BOOL is_show;
@@ -37,6 +40,9 @@
 @property(nonatomic,assign) NSString *user_name;
 @property(nonatomic,assign) NSMutableArray *highlightedFlagAll;
 @property(nonatomic,assign) NSString *articleIdForComment;
+
+@property(nonatomic,assign) NSMutableArray *myListIine;
+@property(nonatomic,assign) NSIndexPath *iineIndexPath;
 
 @property (strong, nonatomic) UITabBarController *tabBarController;
 

@@ -243,6 +243,8 @@
     NSError *error = nil;
     NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error];
     
+    [request release];
+    
     if(error == nil){
         NSString *responceString = [[NSString alloc]initWithData:result encoding:NSUTF8StringEncoding];
         NSLog(@"%@",responceString);
@@ -252,6 +254,7 @@
         appdelegate.user_id = [result objectForKey:@"id"];
         appdelegate.is_login = TRUE;
         [responceString release];
+        [result release];
     }
 }
 

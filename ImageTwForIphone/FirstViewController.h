@@ -18,7 +18,6 @@
 #import "IineOperation.h"
 #import "IineDeleteOparation.h"
 #import "CommentViewController.h"
-//#import "ListOperation.h"
 
 @interface FirstViewController : UIViewController{
     IBOutlet UITableView *table;
@@ -38,5 +37,8 @@
     NSMutableArray *iineCount;
     
     AppDelegate *appdelegate;
+    
 }
+-(int)intValue;
+@property(retain,readwrite)NSMutableArray *iine;
 @end

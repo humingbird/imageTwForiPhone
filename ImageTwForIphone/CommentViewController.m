@@ -230,6 +230,7 @@
     if(error == nil){
         NSString *resultString = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
         NSArray * jsonArray = [resultString JSONValue];
+        [resultString release];
         NSLog(@"jsonArray list:%@",jsonArray);
         
         articleComment =[[NSMutableArray alloc]init];
